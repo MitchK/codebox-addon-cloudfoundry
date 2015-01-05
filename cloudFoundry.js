@@ -7,7 +7,7 @@ define([], function() {
     var Command = codebox.require("models/command");
     var cache = hr.Cache.namespace("heroku");
 
-    var appsCmds = Command.register("heroku.applications", {
+    var appsCmds = Command.register("cloudFoundry.applications", {
         'title': "Applications",
         'offline': false,
         'type': "menu"
@@ -16,7 +16,9 @@ define([], function() {
     // List apps
     var listApps = function(force) {
         return Q().then(function() {
-            if (!user.settings("heroku").get("key")) {
+            if (!user.settings("cloudFoundry").get("apiEndpoint")
+                || !user.settings("cloudFoundry").get("e-mail")
+                || !user.settings("cloudFoundry").get("password")) {
                 return Q([]);
             }
 
@@ -24,7 +26,7 @@ define([], function() {
             if (_apps && force != true) {
                 return Q(_apps);
             } else {
-                return rpc.execute("heroku/apps").then(function(apps) {
+                return rpc.execute("cloudFoundry/apps").then(function(apps) {
                     // Set cache
                     cache.set("apps", apps, 3600);
 
@@ -59,8 +61,8 @@ define([], function() {
     var deployApp = function(app) {
         var gitUrl = app.git_url;
         dialogs.confirm("Deploy code to application <b>"+_.escape(app.name)+"</b>?").then(function() {
-            rpc.execute("heroku/deploy", {
-                'git': app.git_url
+            rpc.execute("cloudFoundry/deploy", {
+                'app': app.name
             }).then(function(runInfos) {
                 Command.run("terminal.open", runInfos.shellId);
             })
