@@ -5,7 +5,7 @@ define([], function() {
     var dialogs = codebox.require("utils/dialogs");
     var rpc = codebox.require("core/backends/rpc");
     var Command = codebox.require("models/command");
-    var cache = hr.Cache.namespace("heroku");
+    var cache = hr.Cache.namespace("cloudFoundry");
 
     var appsCmds = Command.register("cloudFoundry.applications", {
         'title': "Applications",
