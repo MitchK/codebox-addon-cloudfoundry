@@ -1,12 +1,12 @@
 // Requires
+var config = require('./config');
 var Q = require('q');
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var spawn = require('child_process').spawn;
-var Heroku = require('heroku-client');
 
-function HerokuRPCService(workspace, logger, shells) {
+function CloudFoundryRPCService(workspace, logger, shells) {
     this.workspace = workspace;
     this.logger = logger;
     this.shells = shells;
@@ -14,19 +14,34 @@ function HerokuRPCService(workspace, logger, shells) {
     _.bindAll(this);
 }
 
-// Get heroku client
-HerokuRPCService.prototype._client = function(user) {
-    if (!user.settings.heroku || !user.settings.heroku.key) {
-        return Q.reject(new Error("User need to configure heroku with its api key"));
+// Get cf client
+CloudFoundryRPCService.prototype._client = function(user) {
+    
+    var cfSettings = user.settings[config.namespace];
+    
+    // Check if the user has correctly set up the client
+    if (!cfSettings) {
+        return Q.reject(new Error("user.settings[" + config.namespace + "] not defined."));
     }
-    var client = new Heroku({
-        token: user.settings.heroku.key
-    });
+    if (!cfSettings.apiEndpoint) {
+        return Q.reject(new Error("Cloud Foundry API endpoint not set"));
+    }
+    if (!cfSettings.email) {
+        return Q.reject(new Error("Cloud Foundry user email not set"));
+    }
+    if (!cfSettings.org) {
+        return Q.reject(new Error("Cloud Foundry user org not set"));
+    }
+    if (!cfSettings.password) {
+        return Q.reject(new Error("Cloud Foundry user password not set"));
+    }
+    
+    var client = {}; // TODO
     return Q(client)
 };
 
 // List user applications
-HerokuRPCService.prototype.apps = function(args, meta) {
+CloudFoundryRPCService.prototype.apps = function(args, meta) {
     return this._client(meta.user).then(function(client) {
         return client.apps().list();
     }).then(function(apps) {
@@ -37,35 +52,18 @@ HerokuRPCService.prototype.apps = function(args, meta) {
 // Deploy an application
 HerokuRPCService.prototype.deploy = function(args, meta) {
     var git, that = this;
-    if (!args.git) {
-        return Q.reject(new Error("Need 'git' to deploy an heroku apps"));
+    if (!args.app) {
+        return Q.reject(new Error("Need 'app' to deploy to Cloud Foundry"));
     }
 
-    this.logger.log("Start deploying to Heroku ("+args.git+")");
+    this.logger.log("Start deploying to CloudFoundry ("+args.app+")");
 
     // Spawn the new shell
-    var shellId = "heroku-deploy";
-    var shell = this.shells.createShellCommand(shellId, ['git', 'push', args.git, 'master']);
+    var shellId = config.namespace + "-deploy";
+    var shell = this.shells.createShellCommand(shellId, ['cf', 'push', args.app]);
 
     return Q({
         shellId: shellId
-    });
-};
-
-// Send key to heroku
-HerokuRPCService.prototype.update = function(args, meta) {
-    var publickey = null;
-    var that = this;
-    var publickey_file = path.join(process.env.HOME, '.ssh/id_rsa.pub');
-    return Q.nfcall(fs.readFile, publickey_file, 'utf8').then(function(content) {
-        publickey = content;
-        return that._client(meta.user);
-    }).then(function(client) {
-        return client.account().keys().create({
-            'public_key': publickey
-        });
-    }).then(function(key) {
-        return Q(key);
     });
 };
 
