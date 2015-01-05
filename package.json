@@ -1,14 +1,14 @@
 {
-    "name": "heroku",
-    "version": "0.3.1",
-    "title": "Heroku",
-    "description": "Heroku deployment solution for CodeBox.",
+    "name": "codebox-addon-cloudfoundry",
+    "version": "0.0.1",
+    "title": "Codebox Addon Cloud Foundry",
+    "description": "Cloud Foundry deployment solution for CodeBox.",
     "homepage": "https://github.com/FriendCode/codebox-addon-heroku",
     "license": "Apache",
     "author": {
-        "name": "Samy Pessé",
-        "email": "samypesse@gmail.com",
-        "url": "http://samypesse.fr"
+        "name": "Michael Kunzmann",
+        "email": "mail@michaelkunzmann.com",
+        "url": "http://michaelkunzmann.com"
     },
     "dependencies": {
         "heroku-client": "0.9.2",
