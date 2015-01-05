@@ -58,6 +58,12 @@ HerokuRPCService.prototype.deploy = function(args, meta) {
     }
 
     this.logger.log("Start deploying to CloudFoundry ("+args.app+")");
+    
+    // TODO
+    // cf api ...
+    // cf auth ....
+    // cf target
+
 
     // Spawn the new shell
     var shellId = config.namespace + "-deploy";
@@ -69,4 +75,4 @@ HerokuRPCService.prototype.deploy = function(args, meta) {
 };
 
 // Exports
-exports.HerokuRPCService = HerokuRPCService;
+exports.CloudFoundryRPCService = CloudFoundryRPCService;
