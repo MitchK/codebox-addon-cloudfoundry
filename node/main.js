@@ -1,6 +1,6 @@
 var HerokuRPCService = require('./service').HerokuRPCService;
 
-function setup(options, imports, register) {
+module.exports = function (options, imports, register) {
     // Import
     var httpRPC = imports.httpRPC;
     var workspace = imports.workspace;
@@ -14,7 +14,4 @@ function setup(options, imports, register) {
 
     // Register
     register(null, {});
-}
-
-// Exports
-module.exports = setup;
+};
