@@ -23,19 +23,24 @@ define([
         },
         'fields': {
             'apiEndpoint': {
-                'label': "Cloud Foundry Endpoint",
+                'label': "API Endpoint",
                 'type': "text",
                 'help': "Set your Cloud Foundry instance endpoint",
             },
-            'email': {
-                'label': "Cloud Foundry user e-mail address",
+            'username': {
+                'label': "User name ",
                 'type': "text",
-                'help': "The e-mail address you use to authenticate against Cloud Foundry",
+                'help': "The  user name you use to authenticate against Cloud Foundry",
             },
             'password': {
-                'label': "Cloud Foundry user password",
+                'label': "Password",
                 'type': "text",
                 'help': "The password you use to authenticate against Cloud Foundry",
+            },
+            'target': {
+                'label': "Target",
+                'type': "text",
+                'help': "Deployment target (org or space),
             },
         }
     });
