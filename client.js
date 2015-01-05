@@ -1,6 +1,7 @@
+
 define([
-    "heroku"
-], function(heroku) {
+    'cloudfoundry'
+], function(cloudFoundry) {
     var Q = codebox.require("q");
     var hr = codebox.require("hr/hr");
     var _ = codebox.require("underscore");
@@ -15,40 +16,41 @@ define([
 
     // Add settings page
     settings.add({
-        'namespace': "heroku",
-        'title': "Heroku",
+        'namespace': "cloudFoundry",
+        'title': "Cloud Foundry",
         'defaults': {
-            'key': ""
+            'apiEndpoint': "https://api.run.pivotal.io"
         },
         'fields': {
-            'key': {
-                'label': "Key",
+            'apiEndpoint': {
+                'label': "Cloud Foundry Endpoint",
                 'type': "text",
-                'help': "You can find your api key in your settings Heroku.",
+                'help': "Set your Cloud Foundry instance endpoint",
             },
-            'regenerate': {
-                'label': "",
-                'type': "action",
-                'content': "Authorize SSH key on Heroku",
-                'help': "Save your settings before authorizing to Heroku.",
-                'trigger': function() {
-                    return rpc.execute("heroku/update");
-                }
-            }
+            'email': {
+                'label': "Cloud Foundry user e-mail address",
+                'type': "text",
+                'help': "The e-mail address you use to authenticate against Cloud Foundry",
+            },
+            'password': {
+                'label': "Cloud Foundry user password",
+                'type': "text",
+                'help': "The password you use to authenticate against Cloud Foundry",
+            },
         }
     });
 
     // Add apps to search
     search.handler({
-        'id': "heroku",
-        'title': "Deploy to heroku"
+        'id': "cloudfoundry",
+        'title': "Deploy to CloudFoundry"
     }, function(query) {
-        return heroku.search(query).then(function(apps) {
+        return cloudFoundry.search(query).then(function(apps) {
             return _.map(apps, function(app) {
                 return {
                     "text": app.name,
                     "callback": function() {
-                        heroku.deploy(app); 
+                        cloudFoundry.deploy(app); 
                     }
                 };
             });
@@ -56,14 +58,14 @@ define([
     });
 
     // Add menu
-    menu.register("heroku", {
-        title: "Heroku"
+    menu.register("cloudFoundry", {
+        title: "Cloud Foundry"
     }).menuSection([
         {
             'type': "action",
             'title': "Settings",
             'action': function() {
-                settings.open("heroku");
+                settings.open("cloudFoundry");
             }
         }
     ]).menuSection([
@@ -72,11 +74,11 @@ define([
             'title': "Refresh Applications",
             'offline': false,
             'action': function() {
-                return heroku.apps(true);
+                return cloudFoundry.apps(true);
             }
         },
-        heroku.commands
+        cloudFoundry.commands
     ]);
 
-    heroku.apps();
+    cloudFoundry.apps();
 });
