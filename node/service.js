@@ -26,17 +26,18 @@ CloudFoundryRPCService.prototype._client = function(user) {
     if (!cfSettings.apiEndpoint) {
         return Q.reject(new Error("Cloud Foundry API endpoint not set"));
     }
-    if (!cfSettings.email) {
-        return Q.reject(new Error("Cloud Foundry user email not set"));
-    }
-    if (!cfSettings.org) {
-        return Q.reject(new Error("Cloud Foundry user org not set"));
+    if (!cfSettings.username) {
+        return Q.reject(new Error("Cloud Foundry user name not set"));
     }
     if (!cfSettings.password) {
         return Q.reject(new Error("Cloud Foundry user password not set"));
     }
+    if (!cfSettings.target) {
+        return Q.reject(new Error("Cloud Foundry deployment target (org or space) not set"));
+    }
     
-    var client = {}; // TODO
+    var client = {}; // TODO implement client
+    
     return Q(client)
 };
 
